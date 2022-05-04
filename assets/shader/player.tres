@@ -1,0 +1,42 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+
+
+
+uniform vec3  scale                               = vec3(0.5);
+uniform float width       : hint_range(0.0, 10.0) = 0.1;
+uniform float sharpness   : hint_range(0.0, 1.0)  = 0.0;
+uniform vec4  glow_colour : hint_color            = vec4(vec3(1.0, 0.0, 0.0), 1.0);
+uniform vec4  colour      : hint_color            = vec4(vec3(0.0, 0.0, 0.0), 1.0);
+
+varying vec3 vert;
+varying vec3 normal;
+
+
+
+void vertex(){
+	VERTEX += sign(VERTEX) * (scale - 1.0) * 0.5;
+	vert   = VERTEX;
+	normal = abs(NORMAL);
+}
+
+
+
+void fragment() {
+	vec3 fv  = fract(vec3(vert.x, vert.y * -1.0, vert.z));
+	vec3 vs  = abs(vert) - scale * 0.5;
+	float ws = width * sharpness;
+	ALBEDO   = (colour.rgb * normal.x + colour.rgb * normal.y + colour.rgb * normal.z) * float(width < length(vs.xy)) * float(width < length(vs.yz)) * float(width < length(vs.xz));
+	EMISSION = (1.0 - smoothstep(ws, width, length(vs.xy)) * smoothstep(ws, width, length(vs.yz)) * smoothstep(ws, width, length(vs.xz))) * glow_colour.rgb;
+}
+"
+
+[resource]
+shader = SubResource( 1 )
+shader_param/scale = Vector3( 0.5, 0.5, 0.5 )
+shader_param/width = 0.1
+shader_param/sharpness = 0.0
+shader_param/glow_colour = Color( 1, 0, 0, 1 )
+shader_param/colour = Color( 0, 0, 0, 1 )

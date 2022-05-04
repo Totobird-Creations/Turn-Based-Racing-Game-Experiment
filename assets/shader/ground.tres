@@ -1,0 +1,40 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+render_mode world_vertex_coords;
+
+
+
+uniform vec4 colour : hint_color = vec4(vec3(0.0, 1.0, 0.0), 1.0);
+
+varying vec3 vtx;
+
+
+
+void vertex() {
+	vtx = VERTEX;
+}
+
+
+
+void fragment() {
+	float dist = max(
+		max(
+			mod(vtx.x, 1.0),
+			1.0 - mod(vtx.x, 1.0)
+		),
+		max(
+			mod(vtx.z, 1.0),
+			1.0 - mod(vtx.z, 1.0)
+		)
+	);
+	dist   = dist * 2.0 - 1.0;
+	dist   = pow(dist, 25.0);
+	ALBEDO = vec3(dist) * colour.rgb;
+}
+"
+
+[resource]
+shader = SubResource( 1 )
+shader_param/colour = Color( 0, 1, 0, 1 )

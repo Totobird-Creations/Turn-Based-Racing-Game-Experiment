@@ -1,0 +1,47 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/shader/ground.tres" type="Material" id=1]
+[ext_resource path="res://main/player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://main/map.gd" type="Script" id=3]
+[ext_resource path="res://map/basic_loop.tscn" type="PackedScene" id=4]
+
+[sub_resource type="PlaneMesh" id=1]
+material = ExtResource( 1 )
+size = Vector2( 50, 50 )
+
+[node name="world" type="Spatial"]
+script = ExtResource( 3 )
+
+[node name="ground" type="MeshInstance" parent="."]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="map" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0 )
+
+[node name="basic_loop" parent="map" instance=ExtResource( 4 )]
+
+[node name="players" type="Spatial" parent="."]
+
+[node name="player" parent="players" instance=ExtResource( 2 )]
+
+[node name="camera" type="Spatial" parent="."]
+
+[node name="camera" type="Camera" parent="camera"]
+transform = Transform( -4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 10, 0 )
+projection = 1
+size = 15.0
+
+[node name="ground_control" type="RemoteTransform" parent="camera"]
+transform = Transform( -4.37114e-08, 1, 4.37114e-08, 0, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 0, 0 )
+remote_path = NodePath("../../ground")
+update_rotation = false
+update_scale = false
+
+[node name="camera_raycast" type="RayCast" parent="."]
+enabled = true
+exclude_parent = false
+cast_to = Vector3( 0, 0, 0 )
+collision_mask = 2
+collide_with_areas = true
+collide_with_bodies = false
